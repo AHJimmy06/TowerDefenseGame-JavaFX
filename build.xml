@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="tower-defense" default="compile" basedir=".">
     <property name="lib.dir" value="lib"/>
-
     <property name="checkstyle.jar" value="${lib.dir}/checkstyle-6.2.1.jar"/>
-
     <property name="main-class" value="Game"/>
-
+    <!-- Agregar la propiedad javafx.path -->
+    <property environment="env"/>
+    <property name="javafx.path" value="${env.PATH_TO_FX}"/>
 
     <fileset dir="." id="files">
         <include name="*.java"/>
@@ -16,8 +16,17 @@
         </mapper>
     </pathconvert>
 
-   <target name="compile">
-        <javac srcdir="." destdir="." includeantruntime="false" taskname="">
+    <!-- Modificar el src.dir para apuntar al directorio raíz -->
+    <property name="src.dir" value="."/>
+
+    <target name="compile">
+        <javac srcdir="${src.dir}" destdir="." includeantruntime="false">
+            <classpath>
+                <pathelement path="${javafx.path}"/>
+                <fileset dir="${javafx.path}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
         </javac>
     </target>
 
@@ -36,6 +45,17 @@
 
     <target name="run" depends="compile">
         <java classname="${main-class}" classpath="." taskname="" fork="true">
+            <classpath>
+                <pathelement path="${javafx.path}"/>
+                <fileset dir="${javafx.path}">
+                    <include name="*.jar"/>
+                </fileset>
+                <pathelement path="."/>
+            </classpath>
+            <jvmarg value="--module-path"/>
+            <jvmarg value="${javafx.path}"/>
+            <jvmarg value="--add-modules"/>
+            <jvmarg value="javafx.controls,javafx.fxml"/>
         </java>
     </target>
 
